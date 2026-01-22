@@ -9,7 +9,7 @@ Nous suivons la spécification [Semantic Versioning 2.0.0](https://semver.org/).
 ### Format
 
 ```
-v<MAJOR>.<MINOR>.<PATCH>[-<pre-release>][+<build>]
+v<MAJOR>.<MINOR>.<PATCH>[-<pre-release>]
 ```
 
 | Élément | Description | Exemple |
@@ -17,26 +17,24 @@ v<MAJOR>.<MINOR>.<PATCH>[-<pre-release>][+<build>]
 | `MAJOR` | Changements incompatibles (breaking changes) | `2.0.0` |
 | `MINOR` | Nouvelles fonctionnalités rétrocompatibles | `1.3.0` |
 | `PATCH` | Corrections de bugs rétrocompatibles | `1.2.4` |
-| `pre-release` | Version de pré-production (optionnel) | `1.0.0-beta.1` |
-| `build` | Métadonnées de build (optionnel) | `1.0.0+20240115` |
+| `pre-release` | Version de pré-production (optionnel) | `1.0.0-rc.1` |
 
 ## Tags Git
 
 ### Format des tags
 
-| Type | Format | Exemple |
-|------|--------|---------|
-| Release stable | `v<MAJOR>.<MINOR>.<PATCH>` | `v1.2.3` |
-| Alpha | `v<MAJOR>.<MINOR>.<PATCH>-alpha.<N>` | `v1.2.3-alpha.1` |
-| Beta | `v<MAJOR>.<MINOR>.<PATCH>-beta.<N>` | `v1.2.3-beta.2` |
-| Release Candidate | `v<MAJOR>.<MINOR>.<PATCH>-rc.<N>` | `v1.2.3-rc.1` |
+| Type | Format | Exemple | Cluster |
+|------|--------|---------|---------|
+| Dev | `v<MAJOR>.<MINOR>.<PATCH>-dev.<N>` | `v1.2.0-dev.1` | Dev |
+| Qualité | `v<MAJOR>.<MINOR>.<PATCH>-qa.<N>` | `v1.2.0-qa.1` | Qualité |
+| Release Candidate | `v<MAJOR>.<MINOR>.<PATCH>-rc.<N>` | `v1.2.0-rc.1` | Preprod |
+| Release stable | `v<MAJOR>.<MINOR>.<PATCH>` | `v1.2.0` | Prod |
 
 ### Règles importantes
 
 1. **Toujours préfixer avec `v`** : `v1.0.0` et non `1.0.0`
 2. **Utiliser des tags annotés** : `git tag -a v1.0.0 -m "Release v1.0.0"`
 3. **Ne jamais modifier un tag publié** : créer une nouvelle version
-4. **Ordre de pré-release** : alpha < beta < rc < stable
 
 ## Quand incrémenter ?
 
@@ -47,7 +45,6 @@ Incrémentez MAJOR quand vous faites des changements **incompatibles** :
 - Suppression d'une API publique
 - Modification du comportement d'une API existante
 - Changement de schéma de base de données non rétrocompatible
-- Changement majeur d'architecture
 
 ```
 v1.5.2 → v2.0.0
@@ -59,7 +56,6 @@ Incrémentez MINOR quand vous ajoutez des **fonctionnalités rétrocompatibles**
 
 - Nouvelle API ou endpoint
 - Nouvelle fonctionnalité utilisateur
-- Nouvelle option de configuration
 - Dépréciation d'une fonctionnalité (sans suppression)
 
 ```
@@ -73,44 +69,76 @@ Incrémentez PATCH pour des **corrections rétrocompatibles** :
 - Correction de bug
 - Correction de faille de sécurité
 - Amélioration de performance
-- Correction de documentation
 
 ```
 v1.5.2 → v1.5.3
 ```
 
-## Cycle de release
+## Cycle de release et déploiement
 
 ### Workflow standard
+
+Le versioning suit le gitflow avec les 4 clusters :
+
+```
+develop ────► qualite ────► preprod ────► main
+   │            │             │            │
+   ▼            ▼             ▼            ▼
+  Dev        Qualité       Preprod       Prod
+   │            │             │            │
+   ▼            ▼             ▼            ▼
+v1.2.0-dev.1  v1.2.0-qa.1  v1.2.0-rc.1  v1.2.0
+```
+
+### Détail du cycle
+
+| Étape | Branche | Tag | Cluster | Description |
+|-------|---------|-----|---------|-------------|
+| 1 | `develop` | `v1.2.0-dev.N` | Dev | Intégration, tests automatisés |
+| 2 | `qualite` | `v1.2.0-qa.N` | Qualité | Recette fonctionnelle |
+| 3 | `preprod` | `v1.2.0-rc.N` | Preprod | Validation finale |
+| 4 | `main` | `v1.2.0` | Prod | Production |
+
+### Exemple de cycle complet
 
 ```
 develop
     │
-    ├──► v1.2.0-alpha.1  (première version testable)
+    ├──► v1.2.0-dev.1   → Déploiement cluster Dev
     │
-    ├──► v1.2.0-alpha.2  (corrections)
+    ├──► v1.2.0-dev.2   → Corrections, redéploiement Dev
     │
-    ├──► v1.2.0-beta.1   (feature complete, tests)
-    │
-    ├──► v1.2.0-beta.2   (corrections)
-    │
-    ├──► v1.2.0-rc.1     (release candidate)
-    │
-    ├──► v1.2.0-rc.2     (dernières corrections)
-    │
-    └──► v1.2.0          (release stable)
+    └──► merge qualite
             │
-            └──► merge dans main
+            ├──► v1.2.0-qa.1   → Déploiement cluster Qualité
+            │
+            ├──► v1.2.0-qa.2   → Corrections après recette
+            │
+            └──► merge preprod
+                    │
+                    ├──► v1.2.0-rc.1   → Déploiement cluster Preprod
+                    │
+                    ├──► v1.2.0-rc.2   → Derniers ajustements
+                    │
+                    └──► merge main
+                            │
+                            └──► v1.2.0   → Déploiement Prod
 ```
 
 ### Hotfix workflow
+
+Pour les corrections urgentes en production :
 
 ```
 main (v1.2.0)
     │
     └──► hotfix/PROJ-XXX-critical-bug
             │
-            └──► v1.2.1 (patch release)
+            ├──► v1.2.1-rc.1   → Test rapide en Preprod
+            │
+            └──► v1.2.1        → Déploiement Prod
+                    │
+                    └──► merge dans develop, qualite, preprod
 ```
 
 ## Création d'un tag
@@ -118,41 +146,20 @@ main (v1.2.0)
 ### Tag annoté (recommandé)
 
 ```bash
-# Créer un tag annoté avec message
-git tag -a v1.2.0 -m "Release v1.2.0
+# Tag de développement
+git tag -a v1.2.0-dev.1 -m "Dev release v1.2.0-dev.1"
 
-## Nouveautés
-- Ajout de la fonctionnalité X
-- Amélioration de Y
+# Tag de qualité
+git tag -a v1.2.0-qa.1 -m "QA release v1.2.0-qa.1"
 
-## Corrections
-- Fix du bug Z"
+# Tag release candidate (preprod)
+git tag -a v1.2.0-rc.1 -m "Release candidate v1.2.0-rc.1"
+
+# Tag de production
+git tag -a v1.2.0 -m "Release v1.2.0"
 
 # Pousser le tag
 git push origin v1.2.0
-```
-
-### Tag de pré-release
-
-```bash
-# Alpha
-git tag -a v1.2.0-alpha.1 -m "Alpha release v1.2.0-alpha.1"
-
-# Beta
-git tag -a v1.2.0-beta.1 -m "Beta release v1.2.0-beta.1"
-
-# Release candidate
-git tag -a v1.2.0-rc.1 -m "Release candidate v1.2.0-rc.1"
-```
-
-### Pousser tous les tags
-
-```bash
-# Pousser un tag spécifique
-git push origin v1.2.0
-
-# Pousser tous les tags (à utiliser avec précaution)
-git push --tags
 ```
 
 ## Changelog
@@ -169,26 +176,13 @@ Nous suivons le format [Keep a Changelog](https://keepachangelog.com/).
 ### Added
 - Nouvelle fonctionnalité X
 
-### Changed
-- Modification du comportement Y
-
-### Deprecated
-- Fonctionnalité Z dépréciée
-
-### Removed
-- Suppression de la fonctionnalité W
-
 ### Fixed
-- Correction du bug V
-
-### Security
-- Correction de la faille U
+- Correction du bug Y
 
 ## [1.2.0] - 2024-01-15
 
 ### Added
 - Ajout de l'authentification OAuth2 (PROJ-123)
-- Nouveau dashboard utilisateur (PROJ-124)
 
 ### Fixed
 - Correction du timeout de session (PROJ-200)
@@ -208,67 +202,10 @@ Nous suivons le format [Keep a Changelog](https://keepachangelog.com/).
 | `Fixed` | Corrections de bugs |
 | `Security` | Corrections de sécurité |
 
-## Exemples de versions
-
-### Projet web classique
+## Ordre de précédence des versions
 
 ```
-v0.1.0       # MVP initial
-v0.2.0       # Ajout authentification
-v0.3.0       # Ajout dashboard
-v1.0.0       # Première release stable
-v1.0.1       # Bugfix
-v1.1.0       # Nouvelle fonctionnalité
-v2.0.0       # Refonte majeure
-```
-
-### API
-
-```
-v1.0.0       # API v1 stable
-v1.1.0       # Nouveaux endpoints
-v1.2.0       # Nouveaux endpoints
-v2.0.0       # Breaking changes (nouvelle version API)
-```
-
-### Librairie/Package
-
-```
-v0.0.1       # Version initiale (instable)
-v0.1.0       # Première version utilisable
-v1.0.0       # API publique stable
-```
-
-## Comparaison de versions
-
-L'ordre de précédence est défini par SemVer :
-
-```
-1.0.0-alpha < 1.0.0-alpha.1 < 1.0.0-alpha.beta < 1.0.0-beta < 1.0.0-beta.2 < 1.0.0-beta.11 < 1.0.0-rc.1 < 1.0.0
-```
-
-## Outils recommandés
-
-### Génération automatique de changelog
-
-- [conventional-changelog](https://github.com/conventional-changelog/conventional-changelog)
-- [semantic-release](https://github.com/semantic-release/semantic-release)
-- [standard-version](https://github.com/conventional-changelog/standard-version)
-
-### Validation de version
-
-```bash
-# Script de validation
-#!/bin/bash
-version=$1
-pattern="^v[0-9]+\.[0-9]+\.[0-9]+(-[a-z]+\.[0-9]+)?$"
-
-if [[ $version =~ $pattern ]]; then
-    echo "Version valide: $version"
-else
-    echo "Version invalide: $version"
-    exit 1
-fi
+v1.0.0-dev.1 < v1.0.0-dev.2 < v1.0.0-qa.1 < v1.0.0-qa.2 < v1.0.0-rc.1 < v1.0.0-rc.2 < v1.0.0
 ```
 
 ---
