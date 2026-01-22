@@ -19,39 +19,39 @@ En participant à ce projet, vous vous engagez à respecter notre [Code de Condu
 
 ### Signaler un bug
 
-1. Vérifiez que le bug n'a pas déjà été signalé dans les [Issues](../../issues)
-2. Créez une nouvelle issue en utilisant le template [Bug Report](ISSUE_TEMPLATE/bug_report.md)
+1. Vérifiez que le bug n'a pas déjà été signalé dans JIRA
+2. Créez un ticket JIRA de type **Bug**
 3. Fournissez un maximum de détails pour reproduire le problème
 
 ### Proposer une fonctionnalité
 
 1. Vérifiez que la fonctionnalité n'a pas déjà été proposée
-2. Créez une nouvelle issue en utilisant le template [Feature Request](ISSUE_TEMPLATE/feature_request.md)
+2. Créez un ticket JIRA de type **Story** ou **Feature**
 3. Décrivez clairement le besoin et la solution envisagée
 
 ### Contribuer au code
 
-1. **Fork** le repository
-2. **Clone** votre fork localement
-3. Créez une **branche** selon nos [conventions de nommage](docs/BRANCH_NAMING.md)
-4. Développez votre fonctionnalité ou correction
-5. **Commit** vos changements selon nos [conventions de commits](docs/COMMIT_CONVENTIONS.md)
-6. **Push** votre branche
-7. Ouvrez une **Pull Request**
+1. Créez une **branche** selon nos [conventions de nommage](docs/BRANCH_NAMING.md)
+2. Développez votre fonctionnalité ou correction
+3. **Commit** vos changements selon nos [conventions de commits](docs/COMMIT_CONVENTIONS.md)
+4. **Push** votre branche
+5. Ouvrez une **Pull Request**
 
 ## Workflow de développement
 
 ### Branches principales
 
-| Branche | Description |
-|---------|-------------|
-| `main` | Branche de production, toujours stable |
-| `develop` | Branche de développement, intégration des features |
+| Branche | Cluster | Description |
+|---------|---------|-------------|
+| `main` | Prod | Code en production |
+| `preprod` | Preprod | Pré-production |
+| `qualite` | Qualité | Recette / QA |
+| `develop` | Dev | Intégration des features |
 
 ### Cycle de vie d'une contribution
 
 ```
-1. Issue créée (bug/feature)
+1. Ticket JIRA créé (bug/feature)
         ↓
 2. Branche créée depuis develop
         ↓
@@ -65,7 +65,7 @@ En participant à ce projet, vous vous engagez à respecter notre [Code de Condu
         ↓
 7. Merge dans develop
         ↓
-8. Release vers main
+8. Déploiement : Dev → Qualité → Preprod → Prod
 ```
 
 ## Conventions
@@ -106,18 +106,16 @@ v2.0.0-rc.1
 ### Avant de soumettre
 
 - [ ] Le code compile sans erreur
-- [ ] Les tests passent (`npm test` / `php artisan test`)
+- [ ] Les tests passent
 - [ ] Le linter ne signale pas d'erreur
 - [ ] La documentation est mise à jour si nécessaire
 - [ ] Le code suit les conventions de style du projet
 
-### Template de PR
+### Contenu de la PR
 
-Utilisez le [template de Pull Request](PULL_REQUEST_TEMPLATE.md) fourni. Il vous guidera pour :
-- Décrire les changements
-- Lier l'issue JIRA associée
-- Indiquer le type de changement
-- Fournir une checklist de vérification
+- Description des changements
+- Référence au ticket JIRA
+- Type de changement (feature, fix, refactor, etc.)
 
 ## Revue de code
 
@@ -158,14 +156,11 @@ Utilisez le [template de Pull Request](PULL_REQUEST_TEMPLATE.md) fourni. Il vous
 
 - Documentez les API publiques
 - Mettez à jour le README si nécessaire
-- Ajoutez des commentaires JSDoc/PHPDoc pour les fonctions publiques
 
 ## Besoin d'aide ?
 
-- Consultez la documentation existante
-- Posez vos questions dans les issues
-- Contactez l'équipe technique
+Consultez le document [SUPPORT.md](SUPPORT.md) pour connaître les canaux de support disponibles.
 
 ---
 
-Merci de contribuer à Mairistem ! Ensemble, nous construisons des solutions pour une administration locale plus efficace.
+Merci de contribuer à Mairistem !
