@@ -1,0 +1,150 @@
+# CODEOWNERS - Propriétaires de code
+#
+# Ce fichier définit les propriétaires de code qui seront automatiquement
+# assignés comme reviewers lors des Pull Requests.
+#
+# Documentation : https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Format :
+# <pattern> <owner> [<owner>...]
+#
+# Les owners peuvent être :
+# - @username (utilisateur GitHub)
+# - @org/team-name (équipe GitHub)
+# - email@example.com
+#
+# L'ordre est important : la dernière règle qui match est appliquée.
+
+# =============================================================================
+# RÈGLES GLOBALES
+# =============================================================================
+
+# Par défaut, l'équipe tech review toutes les modifications
+* @mairistem/tech-leads
+
+# =============================================================================
+# DOCUMENTATION
+# =============================================================================
+
+# Documentation générale
+*.md @mairistem/tech-leads
+/docs/ @mairistem/tech-leads
+
+# =============================================================================
+# CONFIGURATION CI/CD
+# =============================================================================
+
+# GitHub Actions
+/.github/workflows/ @mairistem/devops
+/.github/actions/ @mairistem/devops
+
+# Configuration Docker
+Dockerfile @mairistem/devops
+docker-compose*.yml @mairistem/devops
+/.docker/ @mairistem/devops
+
+# Kubernetes / Helm
+/k8s/ @mairistem/devops
+/helm/ @mairistem/devops
+/charts/ @mairistem/devops
+
+# Terraform / Infrastructure
+/terraform/ @mairistem/devops
+/infrastructure/ @mairistem/devops
+*.tf @mairistem/devops
+
+# =============================================================================
+# BACKEND
+# =============================================================================
+
+# Laravel
+/app/ @mairistem/backend
+/config/ @mairistem/backend
+/database/ @mairistem/backend
+/routes/ @mairistem/backend
+composer.json @mairistem/backend
+composer.lock @mairistem/backend
+
+# Nest.js
+/src/ @mairistem/backend
+/libs/ @mairistem/backend
+nest-cli.json @mairistem/backend
+
+# =============================================================================
+# FRONTEND
+# =============================================================================
+
+# Next.js / React
+/components/ @mairistem/frontend
+/pages/ @mairistem/frontend
+/app/ @mairistem/frontend
+/public/ @mairistem/frontend
+/styles/ @mairistem/frontend
+tailwind.config.* @mairistem/frontend
+next.config.* @mairistem/frontend
+
+# Assets
+*.css @mairistem/frontend
+*.scss @mairistem/frontend
+*.svg @mairistem/frontend
+
+# =============================================================================
+# SÉCURITÉ
+# =============================================================================
+
+# Fichiers sensibles - review sécurité obligatoire
+SECURITY.md @mairistem/security
+/security/ @mairistem/security
+*.pem @mairistem/security
+*.key @mairistem/security
+
+# Dépendances (review sécurité recommandé)
+package-lock.json @mairistem/security @mairistem/tech-leads
+yarn.lock @mairistem/security @mairistem/tech-leads
+composer.lock @mairistem/security @mairistem/tech-leads
+
+# =============================================================================
+# TESTS
+# =============================================================================
+
+# Tests
+/tests/ @mairistem/qa
+/test/ @mairistem/qa
+/__tests__/ @mairistem/qa
+*.test.* @mairistem/qa
+*.spec.* @mairistem/qa
+cypress.config.* @mairistem/qa
+jest.config.* @mairistem/qa
+phpunit.xml @mairistem/qa
+
+# =============================================================================
+# CONFIGURATION PROJET
+# =============================================================================
+
+# Package managers
+package.json @mairistem/tech-leads
+tsconfig.json @mairistem/tech-leads
+.eslintrc* @mairistem/tech-leads
+.prettierrc* @mairistem/tech-leads
+
+# Git
+.gitignore @mairistem/tech-leads
+.gitattributes @mairistem/tech-leads
+
+# =============================================================================
+# EXEMPLES D'UTILISATION PAR PROJET
+# =============================================================================
+
+# Pour un projet spécifique, décommentez et adaptez :
+#
+# /api/ @mairistem/api-team
+# /mobile/ @mairistem/mobile-team
+# /backoffice/ @mairistem/backoffice-team
+
+# =============================================================================
+# NOTES
+# =============================================================================
+
+# 1. Créez les équipes GitHub correspondantes dans l'organisation
+# 2. Adaptez ce fichier aux besoins spécifiques de chaque repository
+# 3. Les règles plus spécifiques doivent être placées après les règles générales
