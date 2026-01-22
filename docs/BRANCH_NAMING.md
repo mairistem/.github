@@ -11,17 +11,19 @@ Ce document définit les conventions de nommage des branches Git pour tous les p
 | Élément | Description | Exemple |
 |---------|-------------|---------|
 | `type` | Type de branche (voir ci-dessous) | `feature`, `fix`, `hotfix` |
-| `ticket` | Référence JIRA | `PROJ-123` |
+| `ticket` | Référence JIRA (si applicable) | `PROJ-123` |
 | `description` | Description courte en kebab-case | `user-authentication` |
 
 ## Types de branches
 
 ### Branches principales
 
-| Branche | Description | Protection |
-|---------|-------------|------------|
-| `main` | Code en production | Protégée, merge via PR uniquement |
-| `develop` | Branche d'intégration | Protégée, merge via PR uniquement |
+| Branche | Description | Déploiement | Protection |
+|---------|-------------|-------------|------------|
+| `main` | Code en production | Cluster **Prod** | Protégée, merge via PR uniquement |
+| `preprod` | Pré-production | Cluster **Preprod** | Protégée, merge via PR uniquement |
+| `qualite` | Recette / QA | Cluster **Qualité** | Protégée, merge via PR uniquement |
+| `develop` | Branche d'intégration | Cluster **Dev** | Protégée, merge via PR uniquement |
 
 ### Branches de travail
 
@@ -33,7 +35,7 @@ Ce document définit les conventions de nommage des branches Git pour tous les p
 | `refactor/` | Refactoring sans changement fonctionnel | `refactor/PROJ-101-clean-api-service` |
 | `docs/` | Documentation uniquement | `docs/PROJ-102-api-documentation` |
 | `test/` | Ajout ou modification de tests | `test/PROJ-103-unit-tests-auth` |
-| `chore/` | Tâches de maintenance | `chore/PROJ-104-upgrade-dependencies` |
+| `chore/` | Tâches de maintenance | `chore/upgrade-dependencies` |
 
 ### Branches de release
 
@@ -41,12 +43,33 @@ Ce document définit les conventions de nommage des branches Git pour tous les p
 |------|-------|---------|
 | `release/` | Préparation d'une release | `release/1.2.0` |
 
+## Workflow Git Flow et déploiement
+
+```
+                                    Clusters
+                                    ────────
+feature/ ──┐
+fix/      ─┼──► develop ──► qualite ──► preprod ──► main
+refactor/ ─┘        │          │           │          │
+                    ▼          ▼           ▼          ▼
+                   Dev      Qualité     Preprod     Prod
+```
+
+### Cycle de déploiement
+
+| Étape | Branche | Cluster | Description |
+|-------|---------|---------|-------------|
+| 1 | `develop` | Dev | Intégration continue, tests automatisés |
+| 2 | `qualite` | Qualité | Recette fonctionnelle, tests QA |
+| 3 | `preprod` | Preprod | Validation finale, tests de charge |
+| 4 | `main` | Prod | Production |
+
 ## Règles de nommage
 
 ### À faire
 
 - Utiliser le **kebab-case** (minuscules avec tirets)
-- Toujours inclure la **référence JIRA**
+- Inclure la **référence JIRA** quand un ticket existe
 - Garder la description **courte** (3-5 mots max)
 - Utiliser des mots **descriptifs** et **significatifs**
 
@@ -60,7 +83,7 @@ Ce document définit les conventions de nommage des branches Git pour tous les p
 
 ## Exemples
 
-### Exemples valides
+### Avec ticket JIRA
 
 ```bash
 # Features
@@ -84,8 +107,22 @@ refactor/PROJ-401-extract-common-utils
 # Documentation
 docs/PROJ-500-update-readme
 docs/PROJ-501-api-swagger-specs
+```
 
-# Releases
+### Sans ticket JIRA
+
+Pour les tâches de maintenance ou documentation sans ticket :
+
+```bash
+chore/upgrade-dependencies
+chore/update-nodejs-20
+docs/fix-readme-typos
+refactor/clean-unused-imports
+```
+
+### Releases
+
+```bash
 release/1.0.0
 release/2.1.0-beta
 ```
@@ -93,9 +130,6 @@ release/2.1.0-beta
 ### Exemples invalides
 
 ```bash
-# Pas de ticket JIRA
-feature/add-login                    # ❌ Manque le ticket
-
 # Mauvais format
 Feature/PROJ-123-Login               # ❌ Majuscules
 feature/PROJ_123_login               # ❌ Underscores
@@ -109,19 +143,7 @@ feature/PROJ-123-fix                 # ❌ Pas descriptif
 feature/PROJ-123-update              # ❌ Pas descriptif
 ```
 
-## Workflow Git Flow
-
-```
-main ─────────────────────────────────────────────► (production)
-  │                                        ▲
-  │                                        │ merge
-  ▼                                        │
-develop ──────────────────────────────► release/1.0.0
-  │         ▲         ▲         ▲
-  │         │         │         │
-  ▼         │         │         │
-feature/   fix/    refactor/   docs/
-```
+## Workflow Git
 
 ### Création d'une branche
 
@@ -157,15 +179,6 @@ git push -u origin feature/PROJ-123-user-authentication
 
 ## Cas particuliers
 
-### Sans ticket JIRA
-
-Dans de rares cas où il n'y a pas de ticket JIRA (ex: maintenance interne), utilisez :
-
-```bash
-chore/no-ticket-upgrade-nodejs-20
-docs/no-ticket-fix-typos
-```
-
 ### Branches personnelles / expérimentales
 
 Pour des expérimentations personnelles :
@@ -176,26 +189,6 @@ spike/<username>-<description>
 ```
 
 Exemple : `experiment/jdupont-test-new-cache-strategy`
-
-## Outils et automatisation
-
-### Hooks Git
-
-Vous pouvez configurer un hook pre-commit pour valider le nom de branche :
-
-```bash
-#!/bin/bash
-# .git/hooks/pre-push
-
-branch=$(git rev-parse --abbrev-ref HEAD)
-pattern="^(feature|fix|hotfix|refactor|docs|test|chore|release)\/[A-Z]+-[0-9]+-[a-z0-9-]+$|^(main|develop)$|^release\/[0-9]+\.[0-9]+\.[0-9]+(-[a-z]+\.[0-9]+)?$"
-
-if [[ ! $branch =~ $pattern ]]; then
-    echo "Erreur: Le nom de branche '$branch' ne respecte pas les conventions."
-    echo "Format attendu: type/PROJ-XXX-description"
-    exit 1
-fi
-```
 
 ---
 
