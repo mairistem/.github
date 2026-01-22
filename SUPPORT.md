@@ -8,9 +8,9 @@ Ce document décrit comment obtenir de l'aide pour les projets Mairistem.
 
 | Canal | Usage | Délai de réponse |
 |-------|-------|------------------|
-| **JIRA** | Bugs, incidents, demandes de fonctionnalités | Selon priorité |
+| **Teams** | Questions rapides, discussions, escalade | Temps réel |
 | **Email** | Questions techniques, demandes d'accès | 24-48h ouvrées |
-| **Slack/Teams** | Questions rapides, discussions | Temps réel |
+| **JIRA** | Bugs, incidents, demandes de fonctionnalités | Selon priorité |
 
 ### Contacts
 
@@ -27,11 +27,17 @@ Ce document décrit comment obtenir de l'aide pour les projets Mairistem.
 Avant de signaler un problème, consultez :
 - La documentation du projet (README, Wiki)
 - Les issues existantes (ouvertes et fermées)
-- Le channel Slack/Teams du projet
+- Le channel Teams du projet
 
-### 2. Créer un ticket JIRA
+### 2. Contacter votre référent technique
 
-Pour les bugs et demandes de fonctionnalités :
+Pour les questions techniques ou blocages :
+- **Teams** : Contactez directement votre référent technique
+- **Email** : Envoyez un email à votre référent technique
+
+### 3. Créer un ticket JIRA
+
+Pour les bugs, incidents et demandes de fonctionnalités :
 
 1. Accédez à JIRA : [jira.mairistem.fr](https://jira.mairistem.fr)
 2. Créez un ticket dans le projet approprié
@@ -39,7 +45,7 @@ Pour les bugs et demandes de fonctionnalités :
 4. Remplissez tous les champs obligatoires
 5. Ajoutez les labels pertinents
 
-### 3. Priorisation
+### Priorisation des tickets
 
 | Priorité | Description | Exemple |
 |----------|-------------|---------|
@@ -48,37 +54,53 @@ Pour les bugs et demandes de fonctionnalités :
 | **Moyenne** | Bug impactant mais contournable | Export PDF échoue |
 | **Basse** | Amélioration, bug mineur | Typo dans l'UI |
 
-## Slack/Teams
+## Microsoft Teams
 
 ### Channels disponibles
 
 | Channel | Usage |
 |---------|-------|
-| `#dev-general` | Discussions générales développement |
-| `#dev-help` | Demandes d'aide technique |
-| `#devops` | Infrastructure, CI/CD, déploiements |
-| `#incidents` | Signalement et suivi d'incidents |
-| `#releases` | Annonces de releases |
+| `Dev - Général` | Discussions générales développement |
+| `Dev - Aide` | Demandes d'aide technique |
+| `DevOps` | Infrastructure, CI/CD, déploiements |
+| `Incidents` | Signalement et suivi d'incidents |
+| `Releases` | Annonces de releases |
 
 ### Bonnes pratiques
 
 - Utilisez les threads pour garder les conversations organisées
 - Mentionnez les personnes concernées avec `@`
 - Partagez les liens JIRA pour le contexte
-- Évitez les messages privés pour les sujets techniques (préférez les channels)
+- Privilégiez les channels publics pour les sujets techniques
 
 ## Escalade
 
-Si votre problème n'est pas résolu dans les délais attendus :
+Si vous êtes bloqué ou si votre problème n'est pas résolu :
+
+### Option 1 : Contacter votre référent technique
+
+- **Par Teams** : Message direct ou appel
+- **Par Email** : Email avec contexte détaillé
+
+### Option 2 : Créer un ticket JIRA
+
+Si le problème nécessite un suivi formel :
+
+1. Créez un ticket JIRA avec le type approprié
+2. Décrivez le contexte et le blocage
+3. Assignez ou mentionnez votre référent technique
+4. Ajoutez le label `escalade` si urgent
+
+### Chaîne d'escalade
 
 ```
-1. Relancer sur le ticket JIRA
+1. Référent technique (Teams / Email / JIRA)
         ↓
-2. Contacter le Tech Lead du projet
+2. Tech Lead du projet
         ↓
-3. Escalader au manager technique
+3. Manager technique
         ↓
-4. Contacter la direction technique
+4. Direction technique
 ```
 
 ## Ressources utiles
@@ -94,7 +116,7 @@ Si votre problème n'est pas résolu dans les délais attendus :
 |-------|-----|-------|
 | JIRA | jira.mairistem.fr | Gestion de tickets |
 | Confluence | confluence.mairistem.fr | Documentation |
-| GitLab/GitHub | github.com/mairistem | Code source |
+| GitHub | github.com/mairistem | Code source |
 | Grafana | grafana.mairistem.fr | Monitoring |
 | Kibana | kibana.mairistem.fr | Logs |
 
@@ -103,7 +125,7 @@ Si votre problème n'est pas résolu dans les délais attendus :
 ### Je n'arrive pas à accéder au repository
 
 1. Vérifiez que vous êtes membre de l'organisation GitHub
-2. Contactez votre manager ou l'équipe DevOps pour les accès
+2. Contactez votre référent technique ou l'équipe DevOps
 
 ### Comment obtenir des accès à un environnement ?
 
@@ -113,10 +135,10 @@ Si votre problème n'est pas résolu dans les délais attendus :
 
 ### Qui contacter pour une urgence en production ?
 
-1. Canal Slack `#incidents`
+1. Channel Teams `Incidents`
 2. Astreinte DevOps (voir planning dans Confluence)
 3. Email : urgence@mairistem.fr
 
 ---
 
-Pour toute question sur ce document, contactez l'équipe technique.
+Pour toute question sur ce document, contactez votre référent technique.
